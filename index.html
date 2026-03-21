@@ -24,11 +24,11 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
   background: rgba(26, 26, 26, 0.95);
   padding: 8px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 12px;
   border-top: 1px solid #3a3a3a;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 #dpadContainer {
@@ -115,7 +115,7 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
   #controls {
     gap: 6px;
     padding: 4px;
-    flex-direction: column;
+    justify-content: space-around;
   }
   .dpadBtn {
     min-width: 48px;
@@ -128,10 +128,9 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
     gap: 3px;
   }
   #interactBtn {
-    padding: 4px 12px;
+    padding: 6px 14px;
     font-size: 14px;
-    min-width: 140px;
-    width: 140px;
+    min-width: auto;
   }
 }
 
@@ -184,7 +183,10 @@ const MAP_W = 15;
 const MAP_H = 11;
 const WIDTH = MAP_W * TILE;
 const HEIGHT = MAP_H * TILE;
-const SCALE = Math.min(Math.floor(window.innerWidth / WIDTH), Math.floor(window.innerHeight / HEIGHT), 3) || 1;
+// Account for controls panel and mobile viewport
+const maxWidth = Math.min(window.innerWidth, 480); // cap at 480px for mobile
+const maxHeight = window.innerHeight - 150; // leave room for controls
+const SCALE = Math.min(Math.floor(maxWidth / WIDTH), Math.floor(maxHeight / HEIGHT), 3) || 1;
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
 canvas.style.width = WIDTH * SCALE + 'px';
@@ -7944,21 +7946,29 @@ function renderReincarnation() {
     ctx.fillText('(or press SPACE now)', cx_, HEIGHT - 16);
   }
   
-  // Render level menu
+  // Render level menu as a Buddhist path
   if (levelMenuActive) {
-    ctx.fillStyle = 'rgba(0,0,0,0.9)';
+    ctx.fillStyle = 'rgba(0,0,0,0.95)';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
     
+    // Draw a path/journey theme
+    ctx.strokeStyle = 'rgba(232,196,100,0.3)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx_ - 80, HEIGHT - 60);
+    ctx.quadraticCurveTo(cx_, 80, cx_ + 80, 40);
+    ctx.stroke();
+    
     ctx.fillStyle = PAL.white;
-    ctx.font = 'bold 12px monospace';
+    ctx.font = 'bold 14px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('Select Level to Retry', cx_, 40);
+    ctx.fillText('THE PATH OF CALM', cx_, 30);
     
-    ctx.font = '10px monospace';
+    ctx.font = '9px monospace';
     ctx.fillStyle = PAL.whiteD;
-    ctx.fillText('Reached: Level ' + deathLevel, cx_, 60);
+    ctx.fillText('Choose where to continue your journey', cx_, 50);
     
-    // Level list
+    // Level list as waypoints on the path
     const levelNames = [
       'Monastery: Chores',
       'Village: Alms & Restraint',
@@ -7975,22 +7985,39 @@ function renderReincarnation() {
       'Formless IV: Neither-Nor'
     ];
     
-    const startY = 85;
-    const lineHeight = 18;
+    const startY = 75;
+    const lineHeight = 16;
+    let pathY = 65;
+    
     for (let i = 0; i <= deathLevel && i < levelNames.length; i++) {
       const y = startY + i * lineHeight;
+      pathY = y;
+      
       if (i === menuSelectedLevel) {
+        // Highlight current selection
         ctx.fillStyle = PAL.saffron;
-        ctx.fillText('▶ ' + levelNames[i], cx_, y);
+        ctx.beginPath();
+        ctx.arc(cx_ - 100, y, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = PAL.saffron;
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText('◆ ' + levelNames[i], cx_, y + 4);
       } else {
-        ctx.fillStyle = i < deathLevel ? PAL.whiteD : '#666666';
-        ctx.fillText('  ' + levelNames[i], cx_, y);
+        // Passed waypoints
+        ctx.fillStyle = i < deathLevel ? PAL.gold : '#666666';
+        ctx.beginPath();
+        ctx.arc(cx_ - 100, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = i < deathLevel ? PAL.whiteD : '#555555';
+        ctx.font = '9px monospace';
+        ctx.fillText('○ ' + levelNames[i], cx_, y + 3);
       }
     }
     
+    // Instructions at bottom
     ctx.fillStyle = PAL.whiteD;
     ctx.font = '8px monospace';
-    ctx.fillText('[UP/DOWN] to navigate | [SPACE] to select | [Q] to return to title', cx_, HEIGHT - 20);
+    ctx.fillText('[UP/DOWN] choose | [SPACE] go | [Q] quit', cx_, HEIGHT - 20);
   }
   
   ctx.textAlign = 'left';
