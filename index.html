@@ -3385,7 +3385,15 @@ function update(dt) {
 
   if (gameState === 'reincarnation') {
     reincarnTimer += dt;
-    if (reincarnTimer > 2.5 && !levelMenuActive && interactJustPressed) {
+    // Auto-open level menu after 3 seconds
+    if (reincarnTimer > 3 && !levelMenuActive) {
+      levelMenuActive = true;
+      menuSelectedLevel = deathLevel;
+      reincarnTimer = 0;
+      return;
+    }
+    // Or open immediately with SPACE press
+    if (reincarnTimer > 1.5 && !levelMenuActive && interactJustPressed) {
       levelMenuActive = true;
       menuSelectedLevel = deathLevel;
       reincarnTimer = 0;
@@ -7925,10 +7933,15 @@ function renderReincarnation() {
   }
 
   ctx.globalAlpha = 1;
-  if (reincarnTimer > 2.5 && !levelMenuActive) {
-    ctx.fillStyle = 'rgba(184,176,160,' + (Math.sin(gameTime * 3) > 0 ? 0.6 : 0) + ')';
-    ctx.font = '8px monospace';
-    ctx.fillText('SPACE for level menu', cx_, HEIGHT - 16);
+  if (reincarnTimer > 1.5 && !levelMenuActive) {
+    var timeLeft = Math.max(0, 3 - reincarnTimer);
+    ctx.fillStyle = 'rgba(232, 200, 100, 0.9)';
+    ctx.font = 'bold 10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('LEVEL MENU OPENS IN: ' + Math.ceil(timeLeft) + 's', cx_, HEIGHT - 30);
+    ctx.font = '9px monospace';
+    ctx.fillStyle = 'rgba(184,176,160,0.8)';
+    ctx.fillText('(or press SPACE now)', cx_, HEIGHT - 16);
   }
   
   // Render level menu
