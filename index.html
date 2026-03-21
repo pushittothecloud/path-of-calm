@@ -2332,6 +2332,13 @@ function setupLevel(lvl) {
   dialogueText = '';
   spriteCache = {};
   rainySeasonActive = false;
+  // Reset global state
+  craving = 0;
+  cravingInputs = 0;
+  cravingDecayTimer = 0;
+  gameState = 'playing';
+  hindranceFreezeActive = false;
+  hindranceShownSet = new Set();
 
   if (lvl === 0) {
     map = parseMap(MAP1);
