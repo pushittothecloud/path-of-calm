@@ -6,7 +6,7 @@
 <title>Path of Calm</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a1a; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; }
+html, body { width: 100%; height: 100%; overflow: hidden; overflow-x: hidden; background: #1a1a1a; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; max-width: 100vw; }
 
 #gameContainer {
   display: flex;
@@ -111,21 +111,46 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 480px) {
+  #controls {
+    gap: 6px;
+    padding: 4px;
+    flex-direction: column;
+  }
   .dpadBtn {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 48px;
+    min-height: 48px;
     font-size: 16px;
   }
   #dpadContainer {
-    grid-template-columns: repeat(3, 44px);
-    grid-template-rows: repeat(3, 44px);
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(3, 48px);
+    gap: 3px;
+  }
+  #interactBtn {
+    padding: 4px 12px;
+    font-size: 14px;
+    min-width: 140px;
+    width: 140px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dpadBtn {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 14px;
+  }
+  #dpadContainer {
+    grid-template-columns: repeat(3, 40px);
+    grid-template-rows: repeat(3, 40px);
     gap: 2px;
   }
   #interactBtn {
     padding: 4px 8px;
-    font-size: 14px;
-    min-width: 60px;
+    font-size: 12px;
+    min-width: 120px;
+    width: 120px;
   }
 }
 </style>
