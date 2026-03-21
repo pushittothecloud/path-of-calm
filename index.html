@@ -33,9 +33,9 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
 
 #dpadContainer {
   display: grid;
-  grid-template-columns: repeat(3, 50px);
-  grid-template-rows: repeat(3, 50px);
-  gap: 4px;
+  grid-template-columns: repeat(3, 70px);
+  grid-template-rows: repeat(3, 70px);
+  gap: 6px;
 }
 
 .dpadBtn {
@@ -43,7 +43,7 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
   border: 2px solid #4a4a4a;
   border-radius: 4px;
   color: #8a8a8a;
-  font-size: 20px;
+  font-size: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -52,6 +52,8 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
   -webkit-user-select: none;
   touch-action: manipulation;
   transition: all 0.1s ease;
+  min-width: 70px;
+  min-height: 70px;
 }
 
 .dpadBtn:active, .dpadBtn.pressed {
@@ -93,14 +95,14 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
     padding: 6px;
   }
   .dpadBtn {
-    min-width: 40px;
-    min-height: 40px;
-    font-size: 16px;
+    min-width: 56px;
+    min-height: 56px;
+    font-size: 18px;
   }
   #dpadContainer {
-    grid-template-columns: repeat(3, 40px);
-    grid-template-rows: repeat(3, 40px);
-    gap: 2px;
+    grid-template-columns: repeat(3, 56px);
+    grid-template-rows: repeat(3, 56px);
+    gap: 4px;
   }
   #interactBtn {
     padding: 6px 12px;
@@ -111,14 +113,14 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
 
 @media (max-width: 360px) {
   .dpadBtn {
-    min-width: 32px;
-    min-height: 32px;
-    font-size: 14px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 16px;
   }
   #dpadContainer {
-    grid-template-columns: repeat(3, 32px);
-    grid-template-rows: repeat(3, 32px);
-    gap: 1px;
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+    gap: 2px;
   }
   #interactBtn {
     padding: 4px 8px;
@@ -2098,6 +2100,7 @@ let notingWindDir = 1;
 let prevArrowUp = false;
 let prevArrowRight = false;
 let prevArrowLeft = false;
+let prevArrowDown = false;
 
 // Eating mini-game
 let eatingActive = false;
@@ -2149,6 +2152,9 @@ let woodTotal = 3;
 let reincarnAs = '';
 let reincarnDesc = '';
 let reincarnTimer = 0;
+let levelMenuActive = false;
+let menuSelectedLevel = -1;
+let deathLevel = 0;
 
 // Succumbing animation (plays before reincarnation)
 let succumbType = '';      // 'angulimala','lady','gold','food'
@@ -3294,6 +3300,7 @@ function triggerReincarnation(animal, description, deathCause) {
   reincarnDesc = description;
   reincarnTimer = 0;
   lastDeathCause = deathCause || '';
+  deathLevel = currentLevel;
   stopMusic();
   playSfx('bell');
 }
@@ -3353,7 +3360,42 @@ function update(dt) {
 
   if (gameState === 'reincarnation') {
     reincarnTimer += dt;
-    if (reincarnTimer > 4 && interactJustPressed) {
+    if (reincarnTimer > 2.5 && !levelMenuActive && interactJustPressed) {
+      levelMenuActive = true;
+      menuSelectedLevel = deathLevel;
+      reincarnTimer = 0;
+      return;
+    }
+    if (levelMenuActive) {
+      // Navigate menu with arrow keys
+      if ((keys['ArrowUp'] || keys['w'] || keys['W']) && !prevArrowUp) {
+        menuSelectedLevel = Math.max(0, menuSelectedLevel - 1);
+        playSfx('blip');
+      }
+      if ((keys['ArrowDown'] || keys['s'] || keys['S']) && !prevArrowDown) {
+        menuSelectedLevel = Math.min(currentLevel, menuSelectedLevel + 1);
+        playSfx('blip');
+      }
+      prevArrowUp = !!(keys['ArrowUp'] || keys['w'] || keys['W']);
+      prevArrowDown = !!(keys['ArrowDown'] || keys['s'] || keys['S']);
+      // Select with space
+      if (interactJustPressed) {
+        setupLevel(menuSelectedLevel);
+        levelMenuActive = false;
+        gameState = 'playing';
+        stopMusic();
+        playSfx('chime');
+        return;
+      }
+      // Back to title with Q or ESC
+      if (keys['q'] || keys['Q'] || keys['Escape']) {
+        gameState = 'title';
+        levelMenuActive = false;
+        stopMusic();
+        return;
+      }
+    }
+    if (reincarnTimer > 4 && !levelMenuActive && interactJustPressed) {
       gameState = 'title';
       stopMusic();
     }
@@ -7858,11 +7900,61 @@ function renderReincarnation() {
   }
 
   ctx.globalAlpha = 1;
-  if (reincarnTimer > 3) {
+  if (reincarnTimer > 2.5 && !levelMenuActive) {
     ctx.fillStyle = 'rgba(184,176,160,' + (Math.sin(gameTime * 3) > 0 ? 0.6 : 0) + ')';
     ctx.font = '8px monospace';
-    ctx.fillText('SPACE to continue', cx_, HEIGHT - 16);
+    ctx.fillText('SPACE for level menu', cx_, HEIGHT - 16);
   }
+  
+  // Render level menu
+  if (levelMenuActive) {
+    ctx.fillStyle = 'rgba(0,0,0,0.9)';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    
+    ctx.fillStyle = PAL.white;
+    ctx.font = 'bold 12px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Select Level to Retry', cx_, 40);
+    
+    ctx.font = '10px monospace';
+    ctx.fillStyle = PAL.whiteD;
+    ctx.fillText('Reached: Level ' + deathLevel, cx_, 60);
+    
+    // Level list
+    const levelNames = [
+      'Monastery: Chores',
+      'Village: Alms & Restraint',
+      'Forest: Insights',
+      'Access Concentration',
+      'Kasina Training',
+      '1st Jhāna',
+      '2nd Jhāna',
+      '3rd Jhāna',
+      '4th Jhāna',
+      'Formless I: Infinite Space',
+      'Formless II: Infinite Consciousness',
+      'Formless III: Nothingness',
+      'Formless IV: Neither-Nor'
+    ];
+    
+    const startY = 85;
+    const lineHeight = 18;
+    for (let i = 0; i <= deathLevel && i < levelNames.length; i++) {
+      const y = startY + i * lineHeight;
+      if (i === menuSelectedLevel) {
+        ctx.fillStyle = PAL.saffron;
+        ctx.fillText('▶ ' + levelNames[i], cx_, y);
+      } else {
+        ctx.fillStyle = i < deathLevel ? PAL.whiteD : '#666666';
+        ctx.fillText('  ' + levelNames[i], cx_, y);
+      }
+    }
+    
+    ctx.fillStyle = PAL.whiteD;
+    ctx.font = '8px monospace';
+    ctx.fillText('[UP/DOWN] to navigate | [SPACE] to select | [Q] to return to title', cx_, HEIGHT - 20);
+  }
+  
   ctx.textAlign = 'left';
   ctx.globalAlpha = 1;
 }
