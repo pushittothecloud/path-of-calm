@@ -8232,15 +8232,16 @@ function setupButtonControl(btnName) {
 
   // Mouse events
   btn.addEventListener('mousedown', onDown);
-  document.addEventListener('mouseup', onUp);
+  btn.addEventListener('mouseup', onUp);
+  btn.addEventListener('mouseleave', onUp);
 
-  // Touch events
-  btn.addEventListener('touchstart', onDown);
-  document.addEventListener('touchend', onUp);
-  btn.addEventListener('touchcancel', onUp);
+  // Touch events - bind to button itself for better multi-touch support
+  btn.addEventListener('touchstart', onDown, { passive: false });
+  btn.addEventListener('touchend', onUp, { passive: false });
+  btn.addEventListener('touchcancel', onUp, { passive: false });
 
   // Prevent default touch behavior
-  btn.addEventListener('touchmove', (e) => e.preventDefault());
+  btn.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 }
 
 // Initialize all mobile controls
