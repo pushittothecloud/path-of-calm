@@ -3449,8 +3449,8 @@ function update(dt) {
       const distY = tapTarget.y - player.y;
       const dist = Math.sqrt(distX * distX + distY * distY);
 
-      // Clear target if player reached it (within 32px)
-      if (dist < 32) {
+      // Clear target if player reached it (within 16px for precision)
+      if (dist < 16) {
         tapTarget = null;
       } else {
         // Calculate direction towards target
@@ -6081,17 +6081,40 @@ function renderUI() {
     renderCravingMeter();
   }
 
-  // Tap-to-move target indicator
+  // Tap-to-move target indicator with line and precise crosshair
   if (tapTarget && gameState === 'playing') {
+    // Draw line from player to target
+    ctx.strokeStyle = 'rgba(200, 200, 100, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y);
+    ctx.lineTo(tapTarget.x, tapTarget.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Pulsing target circle
     const pulseAlpha = 0.3 + Math.sin(gameTime * 4) * 0.3;
     ctx.fillStyle = 'rgba(200, 200, 100, ' + pulseAlpha + ')';
     ctx.beginPath();
-    ctx.arc(tapTarget.x, tapTarget.y, 6, 0, Math.PI * 2);
+    ctx.arc(tapTarget.x, tapTarget.y, 5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(200, 200, 100, ' + (pulseAlpha + 0.2) + ')';
-    ctx.lineWidth = 2;
+
+    // Precise crosshair
+    ctx.strokeStyle = 'rgba(200, 200, 100, ' + (pulseAlpha + 0.4) + ')';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(tapTarget.x, tapTarget.y, 10, 0, Math.PI * 2);
+    ctx.moveTo(tapTarget.x - 8, tapTarget.y);
+    ctx.lineTo(tapTarget.x + 8, tapTarget.y);
+    ctx.moveTo(tapTarget.x, tapTarget.y - 8);
+    ctx.lineTo(tapTarget.x, tapTarget.y + 8);
+    ctx.stroke();
+
+    // Outer ring
+    ctx.strokeStyle = 'rgba(200, 200, 100, ' + (pulseAlpha + 0.2) + ')';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(tapTarget.x, tapTarget.y, 12, 0, Math.PI * 2);
     ctx.stroke();
   }
 }
