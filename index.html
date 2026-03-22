@@ -8212,20 +8212,23 @@ canvas.addEventListener('touchstart', (e) => {
   if (gameState !== 'playing' || e.touches.length === 0) return;
   const touch = e.touches[0];
   const coords = getCanvasCoords(touch.clientX, touch.clientY);
-  // Only set tap target if not clicking on a UI boundary
+  // Only set tap target if tapping on canvas (not on controls below)
   if (coords.y < HEIGHT) {
+    e.preventDefault();
     tapTarget = coords;
   }
-}, { passive: true });
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+  if (gameState !== 'playing') return;
+  e.preventDefault();
+}, { passive: false });
 
 canvas.addEventListener('mousedown', (e) => {
   if (gameState !== 'playing') return;
-  // Ignore if user is clicking on the interact button
-  const rect = e.target.getBoundingClientRect();
-  if (e.target === interactBtn) return;
   const coords = getCanvasCoords(e.clientX, e.clientY);
   tapTarget = coords;
-}, { passive: true });
+});
 
 </script>
 </body>
