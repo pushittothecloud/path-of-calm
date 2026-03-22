@@ -3470,10 +3470,10 @@ function update(dt) {
       const distY = tapTarget.y - playerFeetY;
       const dist = Math.sqrt(distX * distX + distY * distY);
 
-      // Snap to target when very close (within 12px for smooth landing)
-      if (dist < 12) {
+      // If extremely close, snap directly
+      if (dist < 2) {
         player.x = tapTarget.x;
-        player.y = tapTarget.y - 12; // Snap feet to target, adjust center position
+        player.y = tapTarget.y - 12;
         tapTarget = null;
       } else {
         // Calculate direction towards target
@@ -3486,11 +3486,41 @@ function update(dt) {
   if (dx !== 0 || dy !== 0) {
     if (dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
     const speed = player.speed * 60 * dt;
-    const nx = player.x + dx * speed;
-    const ny = player.y + dy * speed;
-
-    if (canMove(nx, player.y)) player.x = nx;
-    if (canMove(player.x, ny)) player.y = ny;
+    
+    // Check for tap target overshoot before moving
+    if (tapTarget) {
+      const playerFeetY = player.y + 12;
+      const distX = tapTarget.x - player.x;
+      const distY = tapTarget.y - playerFeetY;
+      const nextX = player.x + dx * speed;
+      const nextY = player.y + dy * speed;
+      const nextFeetY = nextY + 12;
+      
+      // If next movement would overshoot target, snap instead
+      const nextDistX = tapTarget.x - nextX;
+      const nextDistY = tapTarget.y - nextFeetY;
+      const nextDist = Math.sqrt(nextDistX * nextDistX + nextDistY * nextDistY);
+      const currDist = Math.sqrt(distX * distX + distY * distY);
+      
+      if (nextDist > currDist) {
+        // Moving away - snap to target
+        player.x = tapTarget.x;
+        player.y = tapTarget.y - 12;
+        tapTarget = null;
+      } else {
+        // Continue moving normally
+        const nx = nextX;
+        const ny = nextY;
+        if (canMove(nx, player.y)) player.x = nx;
+        if (canMove(player.x, ny)) player.y = ny;
+      }
+    } else {
+      // Normal movement when no tap target
+      const nx = player.x + dx * speed;
+      const ny = player.y + dy * speed;
+      if (canMove(nx, player.y)) player.x = nx;
+      if (canMove(player.x, ny)) player.y = ny;
+    }
 
     if (Math.abs(dx) > Math.abs(dy)) player.dir = dx > 0 ? 'right' : 'left';
     else player.dir = dy > 0 ? 'down' : 'up';
