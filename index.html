@@ -3465,8 +3465,9 @@ function update(dt) {
 
     // Tap-to-move navigation (if no keyboard input)
     if (dx === 0 && dy === 0 && tapTarget) {
+      const playerFeetY = player.y + 12; // Offset to player's feet
       const distX = tapTarget.x - player.x;
-      const distY = tapTarget.y - player.y;
+      const distY = tapTarget.y - playerFeetY;
       const dist = Math.sqrt(distX * distX + distY * distY);
 
       // Snap to target when close enough (within 24px - one tile)
@@ -6103,18 +6104,8 @@ function renderUI() {
     renderCravingMeter();
   }
 
-  // Tap-to-move target indicator with line and precise crosshair
+  // Tap-to-move target indicator with precise crosshair
   if (tapTarget && gameState === 'playing') {
-    // Draw line from player to target
-    ctx.strokeStyle = 'rgba(200, 200, 100, 0.4)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(player.x, player.y);
-    ctx.lineTo(tapTarget.x, tapTarget.y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
     // Pulsing target circle
     const pulseAlpha = 0.3 + Math.sin(gameTime * 4) * 0.3;
     ctx.fillStyle = 'rgba(200, 200, 100, ' + pulseAlpha + ')';
