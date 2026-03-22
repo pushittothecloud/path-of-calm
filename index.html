@@ -95,19 +95,39 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
 <div id="controls">
   <button id="interactBtn" title="Space">
     <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-      <!-- 8 petals -->
-      <circle cx="30" cy="18" r="8" fill="#e8912a"/>
-      <circle cx="42.4" cy="21.6" r="8" fill="#e8912a"/>
-      <circle cx="48" cy="30" r="8" fill="#e8912a"/>
-      <circle cx="42.4" cy="38.4" r="8" fill="#e8912a"/>
-      <circle cx="30" cy="42" r="8" fill="#e8912a"/>
-      <circle cx="17.6" cy="38.4" r="8" fill="#e8912a"/>
-      <circle cx="12" cy="30" r="8" fill="#e8912a"/>
-      <circle cx="17.6" cy="21.6" r="8" fill="#e8912a"/>
-      <!-- Center square -->
-      <rect x="24" y="24" width="12" height="12" fill="#e8c840"/>
-      <!-- Border -->
-      <circle cx="30" cy="30" r="26" fill="none" stroke="#c47020" stroke-width="2"/>
+      <!-- Outer layer: 12 light petals -->
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(0 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(30 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(60 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(90 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(120 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(150 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(180 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(210 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(240 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(270 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(300 30 30)"/>
+      <ellipse cx="30" cy="8" rx="6" ry="10" fill="#f0c090" transform="rotate(330 30 30)"/>
+      
+      <!-- Middle layer: 8 medium petals -->
+      <ellipse cx="30" cy="12" rx="5" ry="8" fill="#e8912a" transform="rotate(22.5 30 30)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="8" fill="#e8912a" transform="rotate(67.5 30 30)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="8" fill="#e8912a" transform="rotate(112.5 30 30)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="8" fill="#e8912a" transform="rotate(157.5 30 30)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="8" fill="#e8912a" transform="rotate(202.5 30 30)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="8" fill="#e8912a" transform="rotate(247.5 30 30)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="8" fill="#e8912a" transform="rotate(292.5 30 30)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="8" fill="#e8912a" transform="rotate(337.5 30 30)"/>
+      
+      <!-- Center: golden seed pod -->
+      <circle cx="30" cy="30" r="7" fill="#e8c840"/>
+      <circle cx="30" cy="30" r="6" fill="#f0d450"/>
+      
+      <!-- Center detail -->
+      <circle cx="27" cy="28" r="1.5" fill="#d4a820"/>
+      <circle cx="33" cy="28" r="1.5" fill="#d4a820"/>
+      <circle cx="27" cy="32" r="1.5" fill="#d4a820"/>
+      <circle cx="33" cy="32" r="1.5" fill="#d4a820"/>
     </svg>
   </button>
 </div>
