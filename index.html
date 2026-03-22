@@ -6143,7 +6143,9 @@ function renderUI() {
 
 function renderDialogue(text) {
   const boxH = 70;
-  const boxY = HEIGHT - boxH - 8;
+  // On mobile, position dialogue closer to middle; on desktop, keep at bottom
+  const isMobile = window.innerWidth < 600;
+  const boxY = isMobile ? HEIGHT - boxH - 60 : HEIGHT - boxH - 8;
   const portraitSize = 48;
   const portraitPad = 6;
   const speaker = dialogueSpeaker || 'narration';
