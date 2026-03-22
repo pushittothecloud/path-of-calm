@@ -3473,7 +3473,7 @@ function update(dt) {
       // Snap to target when close enough (within 24px - one tile)
       if (dist < 24) {
         player.x = tapTarget.x;
-        player.y = tapTarget.y;
+        player.y = tapTarget.y - 12; // Snap feet to target, adjust center position
         tapTarget = null;
       } else {
         // Calculate direction towards target
