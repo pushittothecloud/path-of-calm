@@ -3469,8 +3469,8 @@ function update(dt) {
       const distY = tapTarget.y - player.y;
       const dist = Math.sqrt(distX * distX + distY * distY);
 
-      // Snap to target when very close (within 8px for pixel-perfect landing)
-      if (dist < 8) {
+      // Snap to target when close enough (within 24px - one tile)
+      if (dist < 24) {
         player.x = tapTarget.x;
         player.y = tapTarget.y;
         tapTarget = null;
