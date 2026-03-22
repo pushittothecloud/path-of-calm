@@ -24,9 +24,9 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
   background: rgba(26, 26, 26, 0.95);
   padding: 8px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 40px;
   border-top: 1px solid #3a3a3a;
   flex-wrap: nowrap;
 }
@@ -92,7 +92,7 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
 
 @media (max-width: 600px) {
   #controls {
-    gap: 8px;
+    gap: 32px;
     padding: 6px;
   }
   .dpadBtn {
@@ -114,9 +114,9 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
 
 @media (max-width: 480px) {
   #controls {
-    gap: 6px;
+    gap: 24px;
     padding: 4px;
-    justify-content: space-around;
+    justify-content: center;
   }
   .dpadBtn {
     min-width: 48px;
@@ -6125,9 +6125,13 @@ function renderUI() {
     }
   }
 
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '8px monospace';
-  ctx.fillText('Arrows: Move | SPACE: Interact', WIDTH - 200, HEIGHT - 6);
+  // Mobile prompt
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if (isMobile) {
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '8px monospace';
+    ctx.fillText('Tap to move', WIDTH - 100, HEIGHT - 6);
+  }
 
   // Craving meter (shown from L2 onward)
   if (currentLevel >= 1) {
