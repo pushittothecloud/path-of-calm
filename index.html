@@ -31,43 +31,6 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
   flex-wrap: nowrap;
 }
 
-#dpadContainer {
-  display: grid;
-  grid-template-columns: repeat(3, 70px);
-  grid-template-rows: repeat(3, 70px);
-  gap: 6px;
-}
-
-.dpadBtn {
-  background: #2a2a2a;
-  border: 2px solid #4a4a4a;
-  border-radius: 4px;
-  color: #8a8a8a;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  transition: all 0.1s ease;
-  min-width: 70px;
-  min-height: 70px;
-}
-
-.dpadBtn:active, .dpadBtn.pressed {
-  background: #3a5a8b;
-  border-color: #5a7aab;
-  color: #ffffff;
-}
-
-#upBtn { grid-column: 2; grid-row: 1; }
-#downBtn { grid-column: 2; grid-row: 3; }
-#leftBtn { grid-column: 1; grid-row: 2; }
-#rightBtn { grid-column: 3; grid-row: 2; }
-#centerBtn { grid-column: 2; grid-row: 2; background: #3a5a3a; border-color: #5a7a5a; }
-
 #interactBtn {
   background: transparent;
   border: none;
@@ -92,18 +55,8 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
 
 @media (max-width: 600px) {
   #controls {
-    gap: 32px;
-    padding: 6px;
-  }
-  .dpadBtn {
-    min-width: 56px;
-    min-height: 56px;
-    font-size: 18px;
-  }
-  #dpadContainer {
-    grid-template-columns: repeat(3, 56px);
-    grid-template-rows: repeat(3, 56px);
-    gap: 4px;
+    gap: 0;
+    padding: 8px;
   }
   #interactBtn {
     padding: 6px 12px;
@@ -118,16 +71,6 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
     padding: 4px;
     justify-content: center;
   }
-  .dpadBtn {
-    min-width: 48px;
-    min-height: 48px;
-    font-size: 16px;
-  }
-  #dpadContainer {
-    grid-template-columns: repeat(3, 48px);
-    grid-template-rows: repeat(3, 48px);
-    gap: 3px;
-  }
   #interactBtn {
     padding: 6px 14px;
     font-size: 14px;
@@ -136,16 +79,6 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
 }
 
 @media (max-width: 360px) {
-  .dpadBtn {
-    min-width: 40px;
-    min-height: 40px;
-    font-size: 14px;
-  }
-  #dpadContainer {
-    grid-template-columns: repeat(3, 40px);
-    grid-template-rows: repeat(3, 40px);
-    gap: 2px;
-  }
   #interactBtn {
     padding: 4px 8px;
     font-size: 12px;
@@ -160,13 +93,6 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none;
   <canvas id="game"></canvas>
 </div>
 <div id="controls">
-  <div id="dpadContainer">
-    <button id="upBtn" class="dpadBtn" title="Up">▲</button>
-    <button id="leftBtn" class="dpadBtn" title="Left">◀</button>
-    <button id="centerBtn" class="dpadBtn" title="Center" style="visibility: hidden;"></button>
-    <button id="rightBtn" class="dpadBtn" title="Right">▶</button>
-    <button id="downBtn" class="dpadBtn" title="Down">▼</button>
-  </div>
   <button id="interactBtn" title="Space">
     <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
       <!-- 8 petals -->
@@ -8189,69 +8115,37 @@ window.addEventListener('resize', () => {
 // MOBILE CONTROLS
 // ======================================================================
 
-const controlButtons = {
-  up: document.getElementById('upBtn'),
-  down: document.getElementById('downBtn'),
-  left: document.getElementById('leftBtn'),
-  right: document.getElementById('rightBtn'),
-  space: document.getElementById('interactBtn')
-};
+// Button controls - lotus button only
+const interactBtn = document.getElementById('interactBtn');
 
-const keyMap = {
-  up: 'ArrowUp',
-  down: 'ArrowDown',
-  left: 'ArrowLeft',
-  right: 'ArrowRight',
-  space: ' '
-};
-
-function triggerKeyEvent(keyName, isDown) {
-  const eventType = isDown ? 'keydown' : 'keyup';
-  const event = new KeyboardEvent(eventType, {
-    key: keyMap[keyName],
-    code: keyName === 'space' ? 'Space' : ('Arrow' + keyName.charAt(0).toUpperCase() + keyName.slice(1)),
-    bubbles: true,
-    cancelable: true
-  });
-  window.dispatchEvent(event);
-}
-
-function setupButtonControl(btnName) {
-  const btn = controlButtons[btnName];
-  if (!btn) return;
-
+if (interactBtn) {
   const onDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    btn.classList.add('pressed');
-    keys[keyMap[btnName]] = true;
+    interactBtn.classList.add('pressed');
+    keys[' '] = true;
   };
 
   const onUp = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    btn.classList.remove('pressed');
-    keys[keyMap[btnName]] = false;
+    interactBtn.classList.remove('pressed');
+    keys[' '] = false;
   };
 
   // Mouse events
-  btn.addEventListener('mousedown', onDown);
-  btn.addEventListener('mouseup', onUp);
-  btn.addEventListener('mouseleave', onUp);
+  interactBtn.addEventListener('mousedown', onDown);
+  interactBtn.addEventListener('mouseup', onUp);
+  interactBtn.addEventListener('mouseleave', onUp);
 
   // Touch events - bind to button itself for better multi-touch support
-  btn.addEventListener('touchstart', onDown, { passive: false });
-  btn.addEventListener('touchend', onUp, { passive: false });
-  btn.addEventListener('touchcancel', onUp, { passive: false });
+  interactBtn.addEventListener('touchstart', onDown, { passive: false });
+  interactBtn.addEventListener('touchend', onUp, { passive: false });
+  interactBtn.addEventListener('touchcancel', onUp, { passive: false });
 
   // Prevent default touch behavior
-  btn.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+  interactBtn.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 }
-
-// Initialize all mobile controls
-Object.keys(controlButtons).forEach(btnName => {
-  setupButtonControl(btnName);
-});
 
 // Hide controls on desktop if keyboard is being used
 let lastKeyboardTime = 0;
