@@ -1993,6 +1993,7 @@ let gameState = 'title';
 let currentLevel = 0;
 let map = [];
 let player = { x: 0, y: 0, dir: 'down', frame: 0, animTimer: 0, speed: 2 };
+let tapTarget = null; // tap-to-move target location
 let focus = 70;
 let composure = 100;
 
@@ -3441,6 +3442,22 @@ function update(dt) {
     if (keys['ArrowRight'] || keys['d'] || keys['D']) dx += 1;
     if (keys['ArrowUp']    || keys['w'] || keys['W']) dy -= 1;
     if (keys['ArrowDown']  || keys['s'] || keys['S']) dy += 1;
+
+    // Tap-to-move navigation (if no keyboard input)
+    if (dx === 0 && dy === 0 && tapTarget) {
+      const distX = tapTarget.x - player.x;
+      const distY = tapTarget.y - player.y;
+      const dist = Math.sqrt(distX * distX + distY * distY);
+
+      // Clear target if player reached it (within 32px)
+      if (dist < 32) {
+        tapTarget = null;
+      } else {
+        // Calculate direction towards target
+        dx = distX / dist;
+        dy = distY / dist;
+      }
+    }
   }
 
   if (dx !== 0 || dy !== 0) {
@@ -6063,6 +6080,20 @@ function renderUI() {
   if (currentLevel >= 1) {
     renderCravingMeter();
   }
+
+  // Tap-to-move target indicator
+  if (tapTarget && gameState === 'playing') {
+    const pulseAlpha = 0.3 + Math.sin(gameTime * 4) * 0.3;
+    ctx.fillStyle = 'rgba(200, 200, 100, ' + pulseAlpha + ')';
+    ctx.beginPath();
+    ctx.arc(tapTarget.x, tapTarget.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(200, 200, 100, ' + (pulseAlpha + 0.2) + ')';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(tapTarget.x, tapTarget.y, 10, 0, Math.PI * 2);
+    ctx.stroke();
+  }
 }
 
 function renderDialogue(text) {
@@ -8165,6 +8196,36 @@ function updateControlsVisibility() {
 
 updateControlsVisibility();
 window.addEventListener('resize', updateControlsVisibility);
+
+// ======================================================================
+// TAP-TO-MOVE on canvas
+// ======================================================================
+
+function getCanvasCoords(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const x = (clientX - rect.left) / SCALE;
+  const y = (clientY - rect.top) / SCALE;
+  return { x: Math.max(0, Math.min(x, WIDTH)), y: Math.max(0, Math.min(y, HEIGHT)) };
+}
+
+canvas.addEventListener('touchstart', (e) => {
+  if (gameState !== 'playing' || e.touches.length === 0) return;
+  const touch = e.touches[0];
+  const coords = getCanvasCoords(touch.clientX, touch.clientY);
+  // Only set tap target if not clicking on a UI boundary
+  if (coords.y < HEIGHT) {
+    tapTarget = coords;
+  }
+}, { passive: true });
+
+canvas.addEventListener('mousedown', (e) => {
+  if (gameState !== 'playing') return;
+  // Ignore if user is clicking on the interact button
+  const rect = e.target.getBoundingClientRect();
+  if (e.target === interactBtn) return;
+  const coords = getCanvasCoords(e.clientX, e.clientY);
+  tapTarget = coords;
+}, { passive: true });
 
 </script>
 </body>
