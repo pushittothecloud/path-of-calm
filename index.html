@@ -3470,8 +3470,8 @@ function update(dt) {
       const distY = tapTarget.y - playerFeetY;
       const dist = Math.sqrt(distX * distX + distY * distY);
 
-      // Snap to target when close enough (within 24px - one tile)
-      if (dist < 24) {
+      // Snap to target when very close (within 12px for smooth landing)
+      if (dist < 12) {
         player.x = tapTarget.x;
         player.y = tapTarget.y - 12; // Snap feet to target, adjust center position
         tapTarget = null;
